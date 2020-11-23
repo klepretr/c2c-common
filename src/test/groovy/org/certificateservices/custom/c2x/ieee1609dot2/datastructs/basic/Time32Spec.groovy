@@ -12,18 +12,7 @@
  *************************************************************************/
 package org.certificateservices.custom.c2x.ieee1609dot2.datastructs.basic
 
-import net.time4j.PlainDate
-import net.time4j.PlainTime
-import net.time4j.PlainTimestamp
-import net.time4j.engine.ChronoElement;
-import net.time4j.scale.TimeScale;
-
 import org.certificateservices.custom.c2x.common.BaseStructSpec;
-import org.certificateservices.custom.c2x.common.crypto.DefaultCryptoManagerParams;
-import org.certificateservices.custom.c2x.ieee1609dot2.datastructs.basic.Time32;
-
-import spock.lang.Specification;
-import spock.lang.Unroll;
 
 /**
  * Test for Time32
@@ -35,12 +24,32 @@ class Time32Spec extends BaseStructSpec {
 
 
 	Calendar cal = Calendar.getInstance();
+	Calendar calEpoch = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 	
 	def setup(){
 		cal.setTimeInMillis(0);
 		cal.set(2010, 01, 02, 02, 04, 30);
+
+		calEpoch.setTimeInMillis(0);
+		calEpoch.set(2004, Calendar.JANUARY, 01, 00, 00, 00);
 	}
-	
+
+	def "Verify that Time32 epoch is correct"(){
+		setup:
+		Date time = calEpoch.getTime()
+		when:
+		def t = new Time32(time)
+
+		then:
+		t.asElapsedTime() == 0L
+
+		when:
+		def m = new Time32(0L)
+
+		then:
+		m.asDate() == time
+	}
+
 	def "Verify that Time32 converts date correctly"(){
 		setup:
 		Date time = cal.getTime()

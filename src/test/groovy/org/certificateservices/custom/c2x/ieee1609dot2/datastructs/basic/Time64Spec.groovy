@@ -35,10 +35,30 @@ class Time64Spec extends BaseStructSpec {
 
 
 	Calendar cal = Calendar.getInstance()
-	
+	Calendar calEpoch = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+
 	def setup(){
 		cal.setTimeInMillis(0)
 		cal.set(2010, 01, 02, 02, 04, 30)
+
+		calEpoch.setTimeInMillis(0);
+		calEpoch.set(2004, Calendar.JANUARY, 01, 00, 00, 00);
+	}
+
+	def "Verify that Time64 epoch is correct"(){
+		setup:
+		Date time = calEpoch.getTime()
+		when:
+		def t = new Time64(time)
+
+		then:
+		t.asElapsedTime() == 0L
+
+		when:
+		def m = new Time64(BigInteger.valueOf(0))
+
+		then:
+		m.asDate() == time
 	}
 	
 	def "Verify that Time64 converts date correctly"(){
